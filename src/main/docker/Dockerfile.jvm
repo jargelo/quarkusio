@@ -1,0 +1,12 @@
+FROM adoptopenjdk/openjdk11:jdk-11.0.6_10-ubi-minimal
+ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+ENV AB_ENABLED=jmx_exporter
+
+COPY target/lib/* /opt/lib/
+COPY target/*-runner.jar /opt/app.jar
+EXPOSE 8080
+
+RUN microdnf install shadow-utils && \
+    adduser -u 1010 startupstack
+USER 1010
+CMD ["java", "-jar", "/opt/app/jar", "$JAVA_OPTIONS"]
